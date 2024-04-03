@@ -1,0 +1,82 @@
+RED = True
+BLACK = False
+
+class Node:
+    def __init__(self, data):
+        self.data = data
+        self.left = None
+        self.right = None
+        self.color = RED
+
+class RedBlackTree:
+    def __init__(self):
+        self.root = None
+
+    def is_red(self, node):
+        return node is not None and node.color == RED
+
+    def rotate_left(self, h):
+        x = h.right
+        h.right = x.left
+        x.left = h
+        x.color = h.color
+        h.color = RED
+        return x
+
+    def rotate_right(self, h):
+        x = h.left
+        h.left = x.right
+        x.right = h
+        x.color = h.color
+        h.color = RED
+        return x
+
+    def flip_colors(self, h):
+        h.color = RED
+        h.left.color = BLACK
+        h.right.color = BLACK
+
+    def insert(self, data):
+        self.root = self._insert(self.root, data)
+        self.root.color = BLACK
+
+    def _insert(self, h, data):
+        if h is None:
+            return Node(data)
+        if data < h.data:
+            h.left = self._insert(h.left, data)
+        elif data > h.data:
+            h.right = self._insert(h.right, data)
+        else:
+            h.data = data
+
+        if self.is_red(h.right) and not self.is_red(h.left):
+            h = self.rotate_left(h)
+        if self.is_red(h.left) and self.is_red(h.left.left):
+            h = self.rotate_right(h)
+        if self.is_red(h.left) and self.is_red(h.right):
+            self.flip_colors(h)
+        return h
+
+    def search(self, data):
+        return self._search(self.root, data)
+
+    def _search(self, h, data):
+        if h is None or h.data == data:
+            return h
+        if data < h.data:
+            return self._search(h.left, data)
+        return self._search(h.right, data)
+
+# Test Red-Black Tree (RBT)
+rbt = RedBlackTree()
+rbt.insert(50)
+rbt.insert(30)
+rbt.insert(20)
+rbt.insert(40)
+rbt.insert(70)
+rbt.insert(60)
+rbt.insert(80)
+
+print("\nRed-Black Tree:")
+print("Searching for data 40:", rbt.search(40).data)
